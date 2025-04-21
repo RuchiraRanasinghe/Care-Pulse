@@ -90,5 +90,5 @@ export const PatientForm = () => {
     </Form>
   );
 };
-export { FormFieldType };
+export default PatientForm;
 

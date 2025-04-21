@@ -5,7 +5,7 @@ import ReactDatePicker from "react-datepicker";
 import { Control } from "react-hook-form";
 import PhoneInput from "react-phone-number-input";
 
-import { Checkbox } from "@/components/ui/checkbox"; // Updated the path to match the correct location
+import { Checkbox } from "./ui/checkbox";
 import {
   FormControl,
   FormField,
