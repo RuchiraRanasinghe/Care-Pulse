@@ -1,6 +1,5 @@
 import React from 'react'
 import Image from 'next/image'
-import { Link } from 'lucide-react'
 import RegisterForm from '@/components/forms/RegisterForm'
 import { getUser } from '@/lib/actions/patient.actions'
 

@@ -7,47 +7,61 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Form, FormControl } from "@/components/ui/form";
-import { UserFormValidation } from "@/lib/validation";
+import { PatientFormValidation } from "@/lib/validation";
 import "react-phone-number-input/style.css";
 import CustomFormField from "../CustomFormField";
 import { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
-import { createUser } from "@/lib/actions/patient.actions";
-import { Doctors, GenderOptions, IdentificationTypes } from "@/constants";
+import { createUser, registerPatient } from "@/lib/actions/patient.actions";
+import { Doctors, GenderOptions, IdentificationTypes, PatientFormDefaultValues } from "@/constants";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { SelectItem } from "../ui/select";
 import Image from "next/image";
 import FileUploader from "../FileUploader";
+import { register } from "module";
 
 export const RegisterForm = ({ user }: { user: User}) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof UserFormValidation>>({
-    resolver: zodResolver(UserFormValidation),
+  const form = useForm<z.infer<typeof PatientFormValidation>>({
+    resolver: zodResolver(PatientFormValidation),
     defaultValues: {
+      ...PatientFormDefaultValues,
       name: "",
       email: "",
       phone: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
+  const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
 
+    let formData;
+
+    if (values.identificationDocument && values.identificationDocument.length > 0) {
+        const blobFile = new Blob([values.identificationDocument[0]], {
+            type: values.identificationDocument[0].type,
+        });
+
+        formData = new FormData();
+        formData.append("blobFile", blobFile, values.identificationDocument[0].name);
+    }
+
     try {
-      const user = {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-      };
-
-      const newUser = await createUser(user);
-
-      if (newUser) {
-        router.push(`/patients/${newUser.$id}/register`);
+      const patientData = {
+        ...values,
+        userId: user.$id,
+        birthDate: new Date(values.birthDate),
+        identificationDocument: formData
       }
+
+      // @ts-ignore
+      const patient = await registerPatient(patientData);
+
+      // @ts-ignore
+      if (patient) router.push(`/patient/${user.$id}/new-appointment`)
     } catch (error) {
       console.log(error);
     }
