@@ -44,7 +44,7 @@ export const columns: ColumnDef<Appointment>[] = [
       const appointment = row.original;
       return (
         <p className="text-14-regular min-w-[100px]">
-          {formatDateTime(appointment.schedule).dateTime}
+          {formatDateTime(appointment.schedule, appointment.timeZone).dateTime}
         </p>
       );
     },
